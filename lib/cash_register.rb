@@ -2,12 +2,14 @@ require 'pry'
 
 class CashRegister
 
-  attr_accessor = :discount, :items
+  attr_accessor :discount, :items, :last_items, :last_item_price
 
   def initialize(discount = nil)
     @total = 0
     @discount = discount
     @items = []
+    @last_items = []
+    @last_item_price = 0
   end
 
   def discount
@@ -27,7 +29,10 @@ class CashRegister
   end
 
   def add_item(item, price, quantity = 1)
-    quantity.times {@items.push(item)}
+    self.last_items.clear
+    quantity.times {self.last_items.push(item)}
+    self.last_item_price = price * quantity
+    quantity.times {self.items.push(item)}
     self.total += price * quantity
   end
 
@@ -41,7 +46,16 @@ class CashRegister
   end
 
   def void_last_transaction
-    self.total -= self.add_item
+    self.total -= (self.discount ? self.last_item_price * self.discount.to_f/100 : self.last_item_price)
+    self.items.pop(self.last_items.length)
+    self.last_items.clear
+    self.last_item_price = 0
   end
 
 end
+
+
+# next step use hashes not arrays to count items
+# ! can only void LAST transaction and not more
+
+# Pry.start
